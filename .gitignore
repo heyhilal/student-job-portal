@@ -1,0 +1,14 @@
+# Environment
+.env
+
+# Docker volumes
+mysql_data
+
+# Node / Backend
+node_modules
+dist
+build
+
+# OS
+.DS_Store
+
