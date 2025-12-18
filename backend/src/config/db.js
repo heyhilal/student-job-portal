@@ -1,14 +1,9 @@
-const mysql = require("mysql2/promise");
+import mysql from "mysql2";
 
-const db = mysql.createPool({
-  host: "127.0.0.1", // ❗ localhost YOK
-  port: 3307,        // ❗ docker portu
-  user: "portal_user",
-  password: "portal_pass",
+export const db = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "root123",
   database: "student_job_portal",
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
+  port: 3307
 });
-
-module.exports = db;
