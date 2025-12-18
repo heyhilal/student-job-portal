@@ -1,33 +1,63 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
+import { Link } from "react-router-dom";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
-    try {
-      const res = await api.post("/auth/login", { email, password });
-      localStorage.setItem("token", res.data.token);
+  const handleLogin = async (e) => {
+    e.preventDefault();
 
-      if (res.data.user.role === "employer") {
+    try {
+      const res = await api.post("/auth/login", {
+        email,
+        password,
+      });
+
+      // 🔐 KAYDET
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("role", res.data.role);
+
+      // 👉 YÖNLENDİR
+      if (res.data.role === "employer") {
         navigate("/job-post");
       } else {
         navigate("/jobs");
-      }      
+      }
     } catch (err) {
-      alert(err.response?.data?.message || "Login failed");
+      alert("Login failed ❌");
     }
   };
 
   return (
-    <div>
+    <form onSubmit={handleLogin}>
       <h2>Login</h2>
-      <input placeholder="Email" onChange={e => setEmail(e.target.value)} />
-      <input type="password" placeholder="Password" onChange={e => setPassword(e.target.value)} />
-      <button onClick={handleLogin}>Login</button>
-    </div>
+
+      <input
+        type="email"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+      />
+
+      <input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+      />
+
+      <button type="submit">Login</button>
+
+      <p>
+        Don't you have an account?{" "}
+        <Link to="/register">Register here</Link>
+      </p>
+    </form>
   );
 }

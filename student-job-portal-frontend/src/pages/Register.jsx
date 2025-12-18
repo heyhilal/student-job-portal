@@ -1,46 +1,80 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 
 export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("student");
+  const [role, setRole] = useState("student"); // default
+  const navigate = useNavigate();
 
-  const handleRegister = async () => {
+  const handleRegister = async (e) => {
+    e.preventDefault();
+
     try {
-      const url =
-        role === "student"
-          ? "/auth/register"
-          : "/auth/register-employer";
+      if (role === "student") {
+        await api.post("/auth/register-student", {
+          email,
+          password,
+        });
+      } else {
+        await api.post("/auth/register-employer", {
+          email,
+          password,
+        });
+      }
 
-      const res = await api.post(url, { email, password });
-      alert(res.data.message);
+      alert("Register successful ✅");
+      navigate("/");
     } catch (err) {
-      alert(err.response?.data?.message || "Register failed");
+      alert("Register failed ❌");
     }
   };
 
   return (
-    <div>
+    <form onSubmit={handleRegister}>
       <h2>Register</h2>
 
       <input
+        type="email"
         placeholder="Email"
+        value={email}
         onChange={(e) => setEmail(e.target.value)}
+        required
       />
 
       <input
         type="password"
         placeholder="Password"
+        value={password}
         onChange={(e) => setPassword(e.target.value)}
+        required
       />
 
-      <select onChange={(e) => setRole(e.target.value)}>
-        <option value="student">Student</option>
-        <option value="employer">Employer</option>
-      </select>
+      {/* 🔽 ROLE SEÇİMİ */}
+      <div>
+        <label>
+          <input
+            type="radio"
+            value="student"
+            checked={role === "student"}
+            onChange={() => setRole("student")}
+          />
+          Student
+        </label>
 
-      <button onClick={handleRegister}>Register</button>
-    </div>
+        <label style={{ marginLeft: "15px" }}>
+          <input
+            type="radio"
+            value="employer"
+            checked={role === "employer"}
+            onChange={() => setRole("employer")}
+          />
+          Employer
+        </label>
+      </div>
+
+      <button type="submit">Register</button>
+    </form>
   );
 }
