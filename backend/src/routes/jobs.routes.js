@@ -13,5 +13,7 @@ router.post("/", auth, createJob);
 router.get("/", getAllJobs);
 router.get("/employer/:id", getEmployerJobs);
 router.delete("/:id", deleteJob);
+router.get("/employer", getEmployerJobs);
+
 
 export default router;

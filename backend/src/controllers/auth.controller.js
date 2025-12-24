@@ -2,24 +2,32 @@ import { db } from "../config/db.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-// LOGIN
-
-const login = async (req, res) => {
+// ================= LOGIN =================
+export const login = async (req, res) => {
   try {
+    console.log("👉 LOGIN BODY:", req.body);
+
     const { email, password } = req.body;
 
     const [rows] = await db
       .promise()
       .query("SELECT * FROM users WHERE email = ?", [email]);
 
+    console.log("👉 DB RESULT:", rows);
+
     if (rows.length === 0) {
+      console.log("❌ USER NOT FOUND");
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
     const user = rows[0];
+    console.log("👉 HASHED PASSWORD FROM DB:", user.password);
+
     const isMatch = await bcrypt.compare(password, user.password);
+    console.log("👉 PASSWORD MATCH:", isMatch);
 
     if (!isMatch) {
+      console.log("❌ PASSWORD DOES NOT MATCH");
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
@@ -29,70 +37,32 @@ const login = async (req, res) => {
       { expiresIn: "1h" }
     );
 
+    console.log("✅ LOGIN SUCCESS FOR:", email);
+
     res.json({
-      message: "Login successful ✅",
       token,
       role: user.role,
     });
   } catch (err) {
-    console.error(err);
+    console.error("🔥 LOGIN ERROR:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
 
-// REGISTER EMPLOYER
 
-const registerEmployer = async (req, res) => {
+// ================= REGISTER (GENERIC) =================
+export const register = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, role } = req.body;
 
-    // 1️⃣ Validation
-    if (!email || !password) {
-      return res.status(400).json({
-        message: "Email and password are required",
-      });
+    if (!email || !password || !role) {
+      return res
+        .status(400)
+        .json({ message: "Email, password and role are required" });
     }
 
-    // 2️⃣ Email var mı?
-    const [existing] = await db
-      .promise()
-      .query("SELECT id FROM users WHERE email = ?", [email]);
-
-    if (existing.length > 0) {
-      return res.status(409).json({
-        message: "Email already exists",
-      });
-    }
-
-    // 3️⃣ Hash
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // 4️⃣ Insert
-    await db
-      .promise()
-      .query(
-        "INSERT INTO users (email, password, role) VALUES (?, ?, ?)",
-        [email, hashedPassword, "employer"]
-      );
-
-    return res.status(201).json({
-      message: "Employer registered successfully ✅",
-    });
-  } catch (error) {
-    console.error("REGISTER ERROR:", error);
-    return res.status(500).json({
-      message: "Register failed",
-      error: error.message,
-    });
-  }
-};
-// REGISTER STUDENT 
-const registerStudent = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({ message: "Email and password are required" });
+    if (!["student", "employer"].includes(role)) {
+      return res.status(400).json({ message: "Invalid role" });
     }
 
     const [existing] = await db
@@ -108,20 +78,15 @@ const registerStudent = async (req, res) => {
     await db
       .promise()
       .query(
-        "INSERT INTO users (email, password, role) VALUES (?, ?, 'student')",
-        [email, hashedPassword]
+        "INSERT INTO users (email, password, role) VALUES (?, ?, ?)",
+        [email, hashedPassword, role]
       );
 
-    res.status(201).json({ message: "Student registered successfully 🎓" });
+    res.status(201).json({
+      message: "User registered successfully",
+    });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
+    console.error("REGISTER ERROR:", error);
+    res.status(500).json({ message: "Register failed" });
   }
-};
-
-
-export default {
-  login,
-  registerEmployer,
-  registerStudent
 };

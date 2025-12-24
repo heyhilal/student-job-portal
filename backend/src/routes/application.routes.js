@@ -3,7 +3,8 @@ import auth from "../middleware/auth.middleware.js";
 import {
   applyToJob,
   getEmployerApplications,
-  updateApplicationStatus
+  updateApplicationStatus,
+  getStudentApplications 
 } from "../controllers/application.controller.js";
 
 const router = express.Router();
@@ -20,6 +21,9 @@ const roleCheck = (role) => (req, res, next) => {
 
 // Student → Apply to Job
 router.post("/", auth, roleCheck("student"), applyToJob);
+
+// Student - view applications
+router.get("/student", roleCheck("student"), getStudentApplications);
 
 // Employer → View Applications
 router.get("/employer", auth, roleCheck("employer"), getEmployerApplications);

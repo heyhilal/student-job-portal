@@ -19,4 +19,4 @@ const auth = (req, res, next) => {
   });
 };
 
-export default auth; // 🔴 BU SATIR ŞART
+export default auth; 

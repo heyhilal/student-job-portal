@@ -1,63 +1,78 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
-import { Link } from "react-router-dom";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
+  
     try {
       const res = await api.post("/auth/login", {
         email,
         password,
       });
-
-      // 🔐 KAYDET
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("role", res.data.role);
-
-      // 👉 YÖNLENDİR
-      if (res.data.role === "employer") {
-        navigate("/job-post");
+  
+      console.log("LOGIN RESPONSE:", res.data);
+  
+      const token = res.data.token;
+      const role = res.data.role;
+  
+      // backend user objesi dönmüyorsa biz oluşturuyoruz
+      const user = {
+        email,
+        role,
+      };
+  
+      login(user, token, role);
+  
+      if (role === "employer") {
+        navigate("/employer/job-post");
       } else {
-        navigate("/jobs");
+        navigate("/student");
       }
     } catch (err) {
-      alert("Login failed ❌");
+      console.error("LOGIN ERROR:", err.response?.data || err.message);
+      alert(err.response?.data?.message || "Login failed ❌");
     }
   };
+  
+    
+  
 
   return (
-    <form onSubmit={handleLogin}>
-      <h2>Login</h2>
+    <div className="page">
+      <form onSubmit={handleLogin} className="card">
+        <h2>Login</h2>
 
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
 
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
 
-      <button type="submit">Login</button>
+        <button type="submit">Login</button>
 
-      <p>
-        Don't you have an account?{" "}
-        <Link to="/register">Register here</Link>
-      </p>
-    </form>
+        <p style={{ marginTop: "10px" }}>
+          Don't have an account?{" "}
+          <Link to="/register">Register here</Link>
+        </p>
+      </form>
+    </div>
   );
 }

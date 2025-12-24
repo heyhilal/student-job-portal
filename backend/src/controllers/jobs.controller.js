@@ -42,18 +42,25 @@ export const getAllJobs = async (req, res) => {
 
 export const getEmployerJobs = async (req, res) => {
   try {
-    const { id } = req.params;
+    const employerId = req.user.id;
 
     const [rows] = await db.promise().query(
-      "SELECT * FROM jobs WHERE employer_id = ?",
-      [id]
+      `
+      SELECT id, title, description, location, salary, created_at
+      FROM jobs
+      WHERE employer_id = ?
+      ORDER BY created_at DESC
+      `,
+      [employerId]
     );
 
-    res.json(rows);
+    return res.json(rows);
   } catch (err) {
-    res.status(500).json({ message: "Server error" });
+    console.error("getEmployerJobs error:", err);
+    return res.status(500).json({ message: "Server error" });
   }
 };
+
 
 export const deleteJob = async (req, res) => {
   try {

@@ -1,6 +1,6 @@
 import { useState } from "react";
-import api from "../services/api";
-import LogoutButton from "../components/LogoutButton";
+import api from "../../services/api";
+import LogoutButton from "../../components/LogoutButton";
 
 
 export default function JobPost() {
@@ -24,7 +24,7 @@ export default function JobPost() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <LogoutButton />
+    
       <h2>Create Job</h2>
       
       <input placeholder="Title" onChange={(e) => setTitle(e.target.value)} />

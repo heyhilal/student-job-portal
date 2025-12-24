@@ -1,14 +1,16 @@
 import express from "express";
 import { db } from "../config/db.js";
 import auth from "../middleware/auth.middleware.js";
-import authController from "../controllers/auth.controller.js";
+import { login } from "../controllers/auth.controller.js";
 
 const router = express.Router();
 
+// 🔐 Token test
 router.get("/protected", auth, (req, res) => {
   res.json({ message: "Access granted", user: req.user });
 });
 
+// 🧪 DB connection test
 router.get("/test-db", async (req, res) => {
   try {
     const [rows] = await db.promise().query("SELECT 1 AS db_test");
@@ -27,7 +29,7 @@ router.get("/test-db", async (req, res) => {
   }
 });
 
-router.post("/login", authController.login);
+// 🧪 Login test (aynı controller)
+router.post("/login", login);
 
 export default router;
-

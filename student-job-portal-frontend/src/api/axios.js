@@ -1,13 +1,14 @@
 import axios from "axios";
 
-const api = axios.create({
-  baseURL: "http://localhost:5050/api", 
+const instance = axios.create({
+  baseURL: "http://localhost:5000/api", // backend portun buysa
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-api.interceptors.request.use(
+// Her istekte token ekle
+instance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -18,4 +19,4 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-export default api;
+export default instance;
