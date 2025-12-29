@@ -41,12 +41,6 @@ const EmployerDashboard = () => {
     <div style={{ padding: "20px" }}>
       <h2>Employer Dashboard</h2>
 
-      <button onClick={() => navigate("/employer/job-post")}>
-        + Post New Job
-      </button>
-
-      <h3 style={{ marginTop: "20px" }}>My Job Posts</h3>
-
       {jobs.length === 0 ? (
         <p>You haven’t posted any jobs yet.</p>
       ) : (
@@ -63,8 +57,11 @@ const EmployerDashboard = () => {
             <h4>{job.title}</h4>
             <p>{job.description}</p>
 
+            {/* ✅ JOB BAZLI NAVIGATION */}
             <button
-              onClick={() => navigate("/employer/applications")}
+              onClick={() =>
+                navigate(`/employer/applications/${job.id}`)
+              }
             >
               View Applications
             </button>

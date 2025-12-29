@@ -7,6 +7,7 @@ import Home from "./pages/Home";
 import StudentDashboard from "./pages/student/StudentDashboard";
 import JobList from "./pages/student/JobList";
 import EditProfile from "./pages/student/EditProfile";
+import MyResumes from "./pages/student/MyResumes";
 
 import EmployerDashboard from "./pages/employer/EmployerDashboard";
 import JobPost from "./pages/employer/JobPost";
@@ -15,7 +16,7 @@ import EmployerApplications from "./pages/employer/EmployerApplications";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminJobs from "./pages/admin/AdminJobs";
 import EmployerVerification from "./pages/admin/EmployerVerification";
-
+import AdminUsers from "./pages/admin/AdminUsers";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
@@ -66,6 +67,15 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+        path="/student/resumes"
+        element={
+          <ProtectedRoute role="student">
+            <MyResumes />
+          </ProtectedRoute>
+        }
+      />
+      
 
         {/* Employer */}
         <Route
@@ -93,18 +103,27 @@ export default function App() {
               <EmployerApplications />
             </ProtectedRoute>
           }
+
         />
-
+         <Route
+        path="/employer/applications/:jobId"
+        element={
+          <ProtectedRoute role="employer">
+            <EmployerApplications />
+          </ProtectedRoute>
+        }
+      />
+      
+        
         {/* Admin */}
-        <Route
-  path="/admin"
-  element={
-    <ProtectedRoute role="admin"> 
-        <h2>Admin Dashboard</h2>
-    </ProtectedRoute>
-  }
-/>
-
+           <Route
+             path="/admin"
+             element={
+              <ProtectedRoute role="admin"> 
+              <h2>Admin Dashboard</h2>
+              </ProtectedRoute>
+           }
+        />
         <Route
           path="/admin/jobs"
           element={
@@ -121,6 +140,24 @@ export default function App() {
           </ProtectedRoute>
         }
       />
+      <Route
+      path="/admin/users"
+      element={
+        <ProtectedRoute role="admin">
+          <AdminUsers />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+    path="/admin/dashboard"
+    element={
+      <ProtectedRoute role="admin">
+        <AdminDashboard />
+      </ProtectedRoute>
+    }
+  />
+  
+
 
       </Routes>
     </BrowserRouter>

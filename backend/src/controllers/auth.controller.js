@@ -1,4 +1,4 @@
-import { db } from "../config/db.js";
+import db from "../config/db.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
@@ -125,8 +125,6 @@ export const resetPassword = async (req, res) => {
   }
 };
 
-
-// ================= REGISTER (GENERIC) =================
 export const register = async (req, res) => {
   try {
     const { email, password, role } = req.body;
@@ -141,20 +139,24 @@ export const register = async (req, res) => {
       return res.status(400).json({ message: "Invalid role" });
     }
 
-    const [rows] = await db.query("SELECT id FROM users WHERE email = ?", [email]);
+    const [rows] = await db.query(
+      "SELECT id FROM users WHERE email = ?",
+      [email]
+    );
 
-    if (existing.length > 0) {
+    // ✅ BURASI DÜZELTİLDİ
+    if (rows.length > 0) {
       return res.status(409).json({ message: "Email already exists" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    await db
-      .promise()
-      .query(
-        "INSERT INTO users (email, password, role) VALUES (?, ?, ?)",
-        [email, hashedPassword, role]
-      );
+    const status = role === "employer" ? "pending" : "approved";
+
+    await db.query(
+      "INSERT INTO users (email, password, role, status) VALUES (?, ?, ?, ?)",
+      [email, hashedPassword, role, status]
+    );
 
     res.status(201).json({
       message: "User registered successfully",

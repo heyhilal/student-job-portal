@@ -1,43 +1,49 @@
 import express from "express";
 import auth from "../middleware/auth.middleware.js";
+import roleCheck from "../middleware/role.middleware.js";
 import {
-    getPendingEmployers,
-    updateEmployerStatus
-  } from "../controllers/admin.controller.js";
-  import { getAdminDashboard } from "../controllers/admin.controller.js";
+  getPendingEmployers,
+  updateEmployerStatus,
+  getAllUsers,
+  getAdminDashboard
+} from "../controllers/admin.controller.js";
 
 const router = express.Router();
-//verify employers
-router.get("/employers", auth, getPendingEmployers);
-router.patch("/employers/:id", auth, updateEmployerStatus);
 
-// sadece admin
-const isAdmin = (req, res, next) => {
-  if (req.user.role !== "admin") {
-    return res.status(403).json({ message: "Forbidden" });
-  }
-  next();
-};
+/*
+  VERIFY EMPLOYERS
+  US-5.1.1
+*/
 
-// pending employer list
-router.get("/pending-employers", auth, isAdmin, async (req, res) => {
-  const [rows] = await req.db.query(
-    "SELECT id, email FROM users WHERE role='employer' AND status='pending'"
-  );
-  res.json(rows);
-});
+// pending employer list (ADMIN)
+router.get(
+  "/employers/pending",
+  auth,
+  roleCheck("admin"),
+  getPendingEmployers
+);
 
-// approve / reject
-router.patch("/employers/:id", auth, isAdmin, async (req, res) => {
-  const { status } = req.body; // approved | rejected
-  await req.db.query(
-    "UPDATE users SET status=? WHERE id=?",
-    [status, req.params.id]
-  );
-  res.json({ message: "Employer updated" });
-});
-//admin dashboard
-router.get("/dashboard", auth, getAdminDashboard);
+// approve / reject employer (ADMIN)
+router.patch(
+  "/employers/:id",
+  auth,
+  roleCheck("admin"),
+  updateEmployerStatus
+);
 
+// admin dashboard
+router.get(
+  "/dashboard",
+  auth,
+  roleCheck("admin"),
+  getAdminDashboard
+);
+// view all users (ADMIN)
+router.get(
+  "/users",
+  auth,
+  roleCheck("admin"),
+  getAllUsers
+);
 
 export default router;

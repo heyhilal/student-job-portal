@@ -4,7 +4,8 @@ import {
   applyToJob,
   getEmployerApplications,
   updateApplicationStatus,
-  getStudentApplications 
+  getStudentApplications,
+  getApplicationsByJob  
 } from "../controllers/application.controller.js";
 
 const router = express.Router();
@@ -30,5 +31,12 @@ router.get("/employer", auth, roleCheck("employer"), getEmployerApplications);
 
 // Employer → Accept / Reject
 router.patch("/:id", auth, roleCheck("employer"), updateApplicationStatus);
+
+router.get(
+  "/job/:jobId",
+  auth,
+  roleCheck("employer"),
+  getApplicationsByJob
+);
 
 export default router;

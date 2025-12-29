@@ -1,5 +1,5 @@
 import express from "express";
-import { db } from "../config/db.js";
+import db from "../config/db.js";
 import auth from "../middleware/auth.middleware.js";
 import { login } from "../controllers/auth.controller.js";
 

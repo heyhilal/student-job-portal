@@ -1,43 +1,30 @@
-import { db } from "../config/db.js";
+import db from "../config/db.js";
 
-// Pending employer'ları getir
+// GET pending employers
 export const getPendingEmployers = async (req, res) => {
-  try {
-    if (req.user.role !== "admin") {
-      return res.status(403).json({ message: "Forbidden" });
-    }
+  const [rows] = await db.query(
+    "SELECT id, email FROM users WHERE role='employer' AND status='pending'"
+  );
+  console.log("PENDING EMPLOYERS:", rows); // 👈 EKLE
 
-    const [rows] = await db.query(
-      "SELECT id, email, status FROM users WHERE role = 'employer' AND status = 'pending'"
-    );
-
-    res.json(rows);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Failed to fetch employers" });
-  }
+  res.json(rows);
 };
 
-// Employer status güncelle
+// PATCH approve / reject employer
 export const updateEmployerStatus = async (req, res) => {
-  try {
-    if (req.user.role !== "admin") {
-      return res.status(403).json({ message: "Forbidden" });
-    }
+  const { status } = req.body; // approved | rejected
+  const { id } = req.params;
 
-    const { id } = req.params;
-    const { status } = req.body; // approved | rejected
-
-    await db.query(
-      "UPDATE users SET status = ? WHERE id = ? AND role = 'employer'",
-      [status, id]
-    );
-
-    res.json({ message: "Employer status updated" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Failed to update status" });
+  if (!["approved", "rejected"].includes(status)) {
+    return res.status(400).json({ message: "Invalid status" });
   }
+
+  await db.query(
+    "UPDATE users SET status=? WHERE id=?",
+    [status, id]
+  );
+
+  res.json({ message: "Employer status updated successfully" });
 };
 //admin data görüntüleme
 export const getAdminDashboard = async (req, res) => {
@@ -81,3 +68,10 @@ export const getAdminDashboard = async (req, res) => {
     }
   };
   
+// US-5.3.1 – View All Users
+export const getAllUsers = async (req, res) => {
+  const [rows] = await db.query(
+    "SELECT id, email, role, status FROM users"
+  );
+  res.json(rows);
+};

@@ -12,17 +12,12 @@ export default function Register() {
     e.preventDefault();
 
     try {
-      if (role === "student") {
-        await api.post("/auth/register-student", {
-          email,
-          password,
-        });
-      } else {
-        await api.post("/auth/register-employer", {
-          email,
-          password,
-        });
-      }
+      await api.post("/auth/register", {
+        email,
+        password,
+        role, // "student" veya "employer"
+      });
+      
 
       alert("Register successful ✅");
       navigate("/");

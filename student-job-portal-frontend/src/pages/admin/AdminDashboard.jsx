@@ -1,64 +1,68 @@
 import { useEffect, useState } from "react";
 import api from "../../services/api";
+import { useNavigate } from "react-router-dom";
 
 export default function AdminDashboard() {
-  const [stats, setStats] = useState(null);
-  const [employers, setEmployers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  
+  const [data, setData] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetchDashboard();
+    api.get("/admin/dashboard")
+      .then((res) => {
+        console.log("ADMIN DASHBOARD RESPONSE:", res.data);
+       setData(res.data);
+      })
+      .catch((err) => {
+        console.error("ADMIN DASHBOARD ERROR:", err.response?.data || err.message);
+      });
   }, []);
-  
-  const fetchDashboard = async () => {
-    try {
-      const res = await api.get("/admin/dashboard");
-      console.log("ADMIN DASHBOARD RESPONSE:", res.data); // 🔴 EKLE
-      setStats(res.data.stats);
-      setEmployers(res.data.employers);
-    } catch (err) {
-      console.error("ADMIN DASHBOARD ERROR:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  if (loading) return <p>Loading admin dashboard...</p>;
-  if (!stats) return <p>Failed to load dashboard.</p>;
+  if (!data) return <p>Loading admin dashboard...</p>;
+
+  const { stats, employers } = data;
 
   return (
     <div style={{ padding: "20px" }}>
       <h2>Admin Dashboard</h2>
 
-      {/* === SYSTEM STATS === */}
-      <div style={{ display: "flex", gap: "20px", marginBottom: "30px" }}>
-        <div>👩‍🎓 <b>Students:</b> {stats.students}</div>
-        <div>🧑‍💼 <b>Employers:</b> {stats.employers}</div>
-        <div>📄 <b>Jobs:</b> {stats.jobs}</div>
-        <div>📩 <b>Applications:</b> {stats.applications}</div>
+      {/* 📊 STATS */}
+      <div style={{ marginBottom: "20px" }}>
+        <p><b>Total Students:</b> {stats.students}</p>
+        <p><b>Total Employers:</b> {stats.employers}</p>
+        <p><b>Total Jobs:</b> {stats.jobs}</p>
+        <p><b>Total Applications:</b> {stats.applications}</p>
       </div>
 
-      {/* === EMPLOYER LIST === */}
-      <h3>All Employers</h3>
+      {/* 👔 EMPLOYERS */}
+      <h3>Employers</h3>
 
-      {employers.length === 0 && <p>No employers found.</p>}
+      {employers.length === 0 ? (
+        <p>No employers found.</p>
+      ) : (
+        employers.map((emp) => (
+          <div
+            key={emp.id}
+            style={{
+              border: "1px solid #ccc",
+              padding: "10px",
+              marginBottom: "10px",
+              borderRadius: "6px",
+            }}
+          >
+            <p><b>Email:</b> {emp.email}</p>
+            <p><b>Status:</b> {emp.status}</p>
 
-      <table border="1" cellPadding="8" style={{ borderCollapse: "collapse" }}>
-        <thead>
-          <tr>
-            <th>Email</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {employers.map((emp) => (
-            <tr key={emp.id}>
-              <td>{emp.email}</td>
-              <td>{emp.status}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+            {emp.status === "pending" && (
+              <button
+                onClick={() => navigate("/admin/verify-employers")}
+              >
+                Verify Employers
+              </button>
+            )}
+          </div>
+        ))
+      )}
     </div>
   );
 }

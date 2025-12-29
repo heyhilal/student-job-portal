@@ -3,14 +3,21 @@ import api from "../../services/api";
 
 export default function EmployerVerification() {
   const [employers, setEmployers] = useState([]);
+  const [loading, setLoading] = useState(true); // ✅ EKLENDİ
 
   useEffect(() => {
     fetchEmployers();
   }, []);
 
   const fetchEmployers = async () => {
-    const res = await api.get("/admin/employers");
-    setEmployers(res.data);
+    try {
+      const res = await api.get("/admin/employers/pending");
+      setEmployers(res.data);
+    } catch (err) {
+      console.error("Failed to fetch employers", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const updateStatus = async (id, status) => {
@@ -22,10 +29,21 @@ export default function EmployerVerification() {
     <div>
       <h2>Pending Employers</h2>
 
-      {employers.length === 0 && <p>No pending employers.</p>}
+      {loading && <p>Loading...</p>}
+
+      {!loading && employers.length === 0 && (
+        <p>No pending employers.</p>
+      )}
 
       {employers.map((emp) => (
-        <div key={emp.id} style={{ border: "1px solid #ccc", margin: "10px" }}>
+        <div
+          key={emp.id}
+          style={{
+            border: "1px solid #ccc",
+            margin: "10px",
+            padding: "10px"
+          }}
+        >
           <p><b>Email:</b> {emp.email}</p>
 
           <button onClick={() => updateStatus(emp.id, "approved")}>

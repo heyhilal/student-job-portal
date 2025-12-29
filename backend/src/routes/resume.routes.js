@@ -1,19 +1,30 @@
 import express from "express";
-import multer from "multer";
 import auth from "../middleware/auth.middleware.js";
+import upload from "../middleware/upload.middleware.js";
+import {
+  uploadResume,
+  getMyResumes,
+  deleteResume,
+  renameResume
+} from "../controllers/resume.controller.js";
 
 const router = express.Router();
 
-const upload = multer({
-  dest: "uploads/"
-});
+// ✅ UPLOAD (Sprint 1)
+router.post(
+  "/upload",
+  auth,
+  upload.single("resume"), // 👈 FIELD NAME
+  uploadResume
+);
 
-router.post("/upload", auth, upload.single("resume"), (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ message: "No file uploaded" });
-  }
+// LIST (Sprint 3)
+router.get("/", auth, getMyResumes);
 
-  res.json({ message: "Resume uploaded successfully" });
-});
+// DELETE
+router.delete("/:id", auth, deleteResume);
+
+// RENAME
+router.patch("/:id", auth, renameResume);
 
 export default router;

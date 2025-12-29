@@ -1,22 +1,13 @@
 import { useEffect, useState } from "react";
 import api from "../../services/api";
-import { Link } from "react-router-dom";
-import LogoutButton from "../../components/LogoutButton";
 
 export default function JobList() {
   const [jobs, setJobs] = useState([]);
+  const [resumes, setResumes] = useState([]);
+  const [selectedResume, setSelectedResume] = useState("");
 
-  // 🔹 Filter state
-  const [filters, setFilters] = useState({
-    jobType: "",
-    location: "",
-    keyword: "",
-  });
-
-  // 🔹 Jobs fetch (with filters)
   const fetchJobs = async () => {
     try {
-      const query = new URLSearchParams(filters).toString();
       const res = await api.get("/jobs");
       setJobs(res.data);
     } catch (err) {
@@ -24,15 +15,30 @@ export default function JobList() {
     }
   };
 
-  // 🔹 Initial load
+  const fetchResumes = async () => {
+    try {
+      const res = await api.get("/resumes");
+      setResumes(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
     fetchJobs();
+    fetchResumes();
   }, []);
 
   const handleApply = async (jobId) => {
+    if (!selectedResume) {
+      alert("Please select a resume before applying ❗");
+      return;
+    }
+
     try {
       await api.post("/applications", {
-        job_id: jobId,
+        jobId: jobId,
+        resumeId: selectedResume,
       });
       alert("Applied successfully ✅");
     } catch (err) {
@@ -46,43 +52,26 @@ export default function JobList() {
 
   return (
     <div>
-
       <h2>Available Jobs</h2>
 
-      {/* 🔍 FILTER UI */}
-      <div style={{ marginBottom: "20px", border: "1px solid #ddd", padding: "10px" }}>
-        <select
-          value={filters.jobType}
-          onChange={(e) => setFilters({ ...filters, jobType: e.target.value })}
-        >
-          <option value="">All Job Types</option>
-          <option value="Internship">Internship</option>
-          <option value="Part-time">Part-time</option>
-          <option value="Full-time">Full-time</option>
-        </select>
-
-        <input
-          type="text"
-          placeholder="Location"
-          value={filters.location}
-          onChange={(e) => setFilters({ ...filters, location: e.target.value })}
-          style={{ marginLeft: "10px" }}
-        />
-
-        <input
-          type="text"
-          placeholder="Keyword"
-          value={filters.keyword}
-          onChange={(e) => setFilters({ ...filters, keyword: e.target.value })}
-          style={{ marginLeft: "10px" }}
-        />
-
-        <button onClick={fetchJobs} style={{ marginLeft: "10px" }}>
-          Filter
-        </button>
+      {/* RESUME SELECT */}
+      <div style={{ marginBottom: "20px" }}>
+        <label>
+          Select Resume:{" "}
+          <select
+            value={selectedResume}
+            onChange={(e) => setSelectedResume(e.target.value)}
+          >
+            <option value="">-- Select Resume --</option>
+            {resumes.map((r) => (
+              <option key={r.id} value={r.id}>
+                {r.name}
+              </option>
+            ))}
+          </select>
+        </label>
       </div>
 
-      {/* 📋 JOB LIST */}
       {jobs.length === 0 && <p>No jobs found.</p>}
 
       {jobs.map((job) => (
@@ -92,17 +81,13 @@ export default function JobList() {
         >
           <h3>{job.title}</h3>
           <p>{job.description}</p>
-          <p>
-            <b>Location:</b> {job.location}
-          </p>
-          <p>
-            <b>Job Type:</b> {job.jobType}
-          </p>
-          <p>
-            <b>Salary:</b> {job.salary}
-          </p>
+          <p><b>Location:</b> {job.location}</p>
+          <p><b>Job Type:</b> {job.jobType}</p>
+          <p><b>Salary:</b> {job.salary}</p>
 
-          <button onClick={() => handleApply(job.id)}>Apply</button>
+          <button onClick={() => handleApply(job.id)}>
+            Apply
+          </button>
         </div>
       ))}
     </div>

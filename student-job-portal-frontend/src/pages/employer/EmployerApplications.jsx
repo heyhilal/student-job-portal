@@ -1,41 +1,38 @@
 import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import api from "../../services/api";
-import { updateApplicationStatus } from "../../api/application.api";
 
 const EmployerApplications = () => {
+  const { jobId } = useParams();
+  const navigate = useNavigate();
+
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    fetchApplications();
-  }, []);
-
   const fetchApplications = async () => {
     try {
-      const res = await api.get("/applications/employer");
-      console.log("APPLICATIONS RESPONSE:", res.data);
+      const res = await api.get(`/applications/job/${jobId}`);
       setApplications(res.data);
     } catch (err) {
-      console.error(
-        "FETCH APPLICATIONS ERROR:",
-        err.response?.data || err.message
-      );
+      console.error(err);
       setError("Failed to load applications");
     } finally {
-      setLoading(false); // 🔴 KRİTİK
+      setLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetchApplications();
+  }, [jobId]);
+
   const handleStatusChange = async (applicationId, status) => {
     try {
-      await updateApplicationStatus(applicationId, status);
+      await api.patch(`/applications/${applicationId}`, { status });
 
       setApplications((prev) =>
         prev.map((app) =>
-          app.application_id === applicationId
-            ? { ...app, status }
-            : app
+          app.id === applicationId ? { ...app, status } : app
         )
       );
     } catch (err) {
@@ -48,13 +45,15 @@ const EmployerApplications = () => {
 
   return (
     <div style={{ padding: "20px" }}>
-      <h2>Job Applications</h2>
+      <h2>Applications for Job {jobId}</h2>
 
-      {applications.length === 0 && <p>No applications yet.</p>}
+      {applications.length === 0 && (
+        <p>No applications for this job yet.</p>
+      )}
 
       {applications.map((app) => (
         <div
-          key={app.application_id}
+          key={app.id}
           style={{
             border: "1px solid #ccc",
             padding: "15px",
@@ -62,44 +61,45 @@ const EmployerApplications = () => {
             borderRadius: "6px",
           }}
         >
-          <h4>{app.job_title}</h4>
+          {/* 👤 STUDENT PROFILE */}
+          <h4>Student Profile</h4>
 
-          <p><b>Student Email:</b> {app.email}</p>
-          <p><b>University:</b> {app.university}</p>
-          <p><b>Major:</b> {app.major}</p>
-          <p><b>GPA:</b> {app.GPA}</p>
-          <p><b>Status:</b> {app.status}</p>
+          <p><b>Email:</b> {app.student_email}</p>
+          <p><b>University:</b> {app.university || "N/A"}</p>
+          <p><b>Major:</b> {app.major || "N/A"}</p>
+          <p><b>GPA:</b> {app.gpa || "N/A"}</p>
 
-          <p>
-            <b>Resume:</b>{" "}
-            {app.resume_path ? (
+          {/* 📄 RESUME */}
+          {app.resume_path ? (
+            <p>
+              <b>Resume:</b>{" "}
               <a
                 href={`http://localhost:5050/${app.resume_path}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                View Resume
+                View CV
               </a>
-            ) : (
-              "No resume uploaded"
-            )}
-          </p>
+            </p>
+          ) : (
+            <p><b>Resume:</b> Not provided</p>
+          )}
 
+          {/* 📌 STATUS */}
+          <p><b>Application Status:</b> {app.status}</p>
+
+          {/* 🎯 ACTIONS */}
           <div style={{ marginTop: "10px" }}>
             <button
               disabled={app.status === "accepted"}
-              onClick={() =>
-                handleStatusChange(app.application_id, "accepted")
-              }
+              onClick={() => handleStatusChange(app.id, "accepted")}
             >
               Accept
             </button>
 
             <button
               disabled={app.status === "rejected"}
-              onClick={() =>
-                handleStatusChange(app.application_id, "rejected")
-              }
+              onClick={() => handleStatusChange(app.id, "rejected")}
               style={{ marginLeft: "10px" }}
             >
               Reject
@@ -107,6 +107,8 @@ const EmployerApplications = () => {
           </div>
         </div>
       ))}
+
+ 
     </div>
   );
 };

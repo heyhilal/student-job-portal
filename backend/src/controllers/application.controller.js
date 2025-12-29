@@ -1,4 +1,4 @@
-import { db } from "../config/db.js";
+import db from "../config/db.js";
 
 /* =========================
    STUDENT → APPLY TO JOB
@@ -140,3 +140,35 @@ export const updateApplicationStatus = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
+//get application by job
+export const getApplicationsByJob = async (req, res) => {
+  const { jobId } = req.params;
+  const employerId = req.user.id;
+
+  const [rows] = await db.query(
+    `
+    SELECT 
+      a.id,
+      a.status,
+      u.id AS student_id,
+      u.email AS student_email,
+      u.university,
+      u.major,
+      u.gpa,
+      r.name AS resume_name,
+      r.file_path AS resume_path
+    FROM applications a
+    JOIN jobs j ON a.job_id = j.id
+    JOIN users u ON a.student_id = u.id
+    LEFT JOIN resumes r ON a.resume_id = r.id
+    WHERE a.job_id = ?
+      AND j.employer_id = ?
+    `,
+    [jobId, employerId]
+  );
+
+  res.json(rows);
+};
+
+
+

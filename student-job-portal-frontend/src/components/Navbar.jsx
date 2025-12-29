@@ -31,6 +31,9 @@ export default function Navbar() {
           <Link to="/student/jobs">Jobs</Link>
           {" | "}
           <Link to="/student/profile">Profile</Link>
+          {" | "}
+          <Link to="/student/resumes">My Resumes</Link>
+
         </>
       )}
 
@@ -44,17 +47,19 @@ export default function Navbar() {
           <Link to="/employer/applications">Applications</Link>
         </>
       )}
+{user?.role === "admin" && (
+  <>
+    {" | "}
+    <Link to="/admin/dashboard">Admin Dashboard</Link>
+    {" | "}
+    <Link to="/admin/employers">Verify Employers</Link>
+    {" | "}
+    <Link to="/admin/jobs">Jobs</Link>
+    {" | "}
+    <Link to="/admin/users">All Users</Link>
+  </>
+)}
 
-      {user?.role === "admin" && (
-        <>
-          {" | "}
-          <Link to="/admin">Admin Dashboard</Link>
-          {" | "}
-          <Link to="/admin/employers">Verify Employers</Link>
-          {" | "}
-          <Link to="/admin/jobs">Jobs</Link>
-        </>
-      )}
 
       {user && (
         <>
