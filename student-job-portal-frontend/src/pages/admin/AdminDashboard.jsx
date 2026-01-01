@@ -1,68 +1,66 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import api from "../../services/api";
-import { useNavigate } from "react-router-dom";
+import "../../styles/AdminDashboard.css";
 
 export default function AdminDashboard() {
-  
-  const [data, setData] = useState(null);
-  const navigate = useNavigate();
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     api.get("/admin/dashboard")
       .then((res) => {
-        console.log("ADMIN DASHBOARD RESPONSE:", res.data);
-       setData(res.data);
+        setStats(res.data.stats);
       })
       .catch((err) => {
-        console.error("ADMIN DASHBOARD ERROR:", err.response?.data || err.message);
-      });
+        console.error("Admin dashboard error:", err);
+      })
+      .finally(() => setLoading(false));
   }, []);
 
-  if (!data) return <p>Loading admin dashboard...</p>;
-
-  const { stats, employers } = data;
+  if (loading) return <p className="loading">Loading admin dashboard...</p>;
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>Admin Dashboard</h2>
+    <div className="admin-container">
+      <h1 className="page-title">Admin Dashboard</h1>
 
-      {/* 📊 STATS */}
-      <div style={{ marginBottom: "20px" }}>
-        <p><b>Total Students:</b> {stats.students}</p>
-        <p><b>Total Employers:</b> {stats.employers}</p>
-        <p><b>Total Jobs:</b> {stats.jobs}</p>
-        <p><b>Total Applications:</b> {stats.applications}</p>
+      {/* === STATS === */}
+      <div className="stats-grid">
+        <div className="stat-card">
+          <span>Total Students</span>
+          <strong>{stats.students}</strong>
+        </div>
+
+        <div className="stat-card">
+          <span>Total Employers</span>
+          <strong>{stats.employers}</strong>
+        </div>
+
+        <div className="stat-card">
+          <span>Total Jobs</span>
+          <strong>{stats.jobs}</strong>
+        </div>
+
+        <div className="stat-card">
+          <span>Total Applications</span>
+          <strong>{stats.applications}</strong>
+        </div>
       </div>
 
-      {/* 👔 EMPLOYERS */}
-      <h3>Employers</h3>
+      {/* === QUICK ACTIONS === */}
+      <div className="admin-actions">
+        <Link to="/admin/employers" className="action-card">
+          🏢 Verify Employers
+        </Link>
 
-      {employers.length === 0 ? (
-        <p>No employers found.</p>
-      ) : (
-        employers.map((emp) => (
-          <div
-            key={emp.id}
-            style={{
-              border: "1px solid #ccc",
-              padding: "10px",
-              marginBottom: "10px",
-              borderRadius: "6px",
-            }}
-          >
-            <p><b>Email:</b> {emp.email}</p>
-            <p><b>Status:</b> {emp.status}</p>
+        <Link to="/admin/jobs" className="action-card">
+          📄 Manage Jobs
+        </Link>
 
-            {emp.status === "pending" && (
-              <button
-                onClick={() => navigate("/admin/verify-employers")}
-              >
-                Verify Employers
-              </button>
-            )}
-          </div>
-        ))
-      )}
+        <Link to="/admin/users" className="action-card">
+          👥 View Users
+        </Link>
+      </div>
     </div>
   );
 }

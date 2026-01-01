@@ -1,91 +1,61 @@
 import { useEffect, useState } from "react";
 import api from "../../services/api";
+import "../../styles/JobList.css";
 
 export default function JobList() {
   const [jobs, setJobs] = useState([]);
   const [resumes, setResumes] = useState([]);
   const [selectedResume, setSelectedResume] = useState("");
 
-  const fetchJobs = async () => {
-    try {
-      const res = await api.get("/jobs");
-      setJobs(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const fetchResumes = async () => {
-    try {
-      const res = await api.get("/resumes");
-      setResumes(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   useEffect(() => {
-    fetchJobs();
-    fetchResumes();
+    api.get("/jobs").then((res) => setJobs(res.data));
+    api.get("/resumes").then((res) => setResumes(res.data));
   }, []);
 
   const handleApply = async (jobId) => {
     if (!selectedResume) {
-      alert("Please select a resume before applying ❗");
+      alert("Please select a resume ❗");
       return;
     }
 
     try {
       await api.post("/applications", {
-        jobId: jobId,
+        jobId,
         resumeId: selectedResume,
       });
       alert("Applied successfully ✅");
     } catch (err) {
-      if (err.response?.status === 409) {
-        alert("You already applied to this job ⚠️");
-      } else {
-        alert("Apply failed ❌");
-      }
+      alert("Apply failed ❌");
     }
   };
 
   return (
-    <div>
+    <div className="section">
       <h2>Available Jobs</h2>
 
-      {/* RESUME SELECT */}
-      <div style={{ marginBottom: "20px" }}>
-        <label>
-          Select Resume:{" "}
-          <select
-            value={selectedResume}
-            onChange={(e) => setSelectedResume(e.target.value)}
-          >
-            <option value="">-- Select Resume --</option>
-            {resumes.map((r) => (
-              <option key={r.id} value={r.id}>
-                {r.name}
-              </option>
-            ))}
-          </select>
-        </label>
+      <div className="resume-select">
+        <label>Select Resume:</label>
+        <select
+          value={selectedResume}
+          onChange={(e) => setSelectedResume(e.target.value)}
+        >
+          <option value="">- Select Resume -</option>
+          {resumes.map((r) => (
+            <option key={r.id} value={r.id}>
+              {r.name}
+            </option>
+          ))}
+        </select>
       </div>
 
-      {jobs.length === 0 && <p>No jobs found.</p>}
-
       {jobs.map((job) => (
-        <div
-          key={job.id}
-          style={{ border: "1px solid #ccc", margin: "10px", padding: "10px" }}
-        >
+        <div key={job.id} className="job-card">
           <h3>{job.title}</h3>
           <p>{job.description}</p>
           <p><b>Location:</b> {job.location}</p>
-          <p><b>Job Type:</b> {job.jobType}</p>
           <p><b>Salary:</b> {job.salary}</p>
 
-          <button onClick={() => handleApply(job.id)}>
+          <button onClick={() => handleApply(job.id)} className="btn btn-primary">
             Apply
           </button>
         </div>

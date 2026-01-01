@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import api from "../../services/api";
+import "../../styles/EmployerVerification.css";
 
 export default function EmployerVerification() {
   const [employers, setEmployers] = useState([]);
-  const [loading, setLoading] = useState(true); // ✅ EKLENDİ
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchEmployers();
@@ -21,43 +22,51 @@ export default function EmployerVerification() {
   };
 
   const updateStatus = async (id, status) => {
-    await api.patch(`/admin/employers/${id}`, { status });
-    fetchEmployers();
+    try {
+      await api.patch(`/admin/employers/${id}`, { status });
+      fetchEmployers();
+    } catch (err) {
+      alert("Failed to update employer status");
+    }
   };
 
   return (
-    <div>
-      <h2>Pending Employers</h2>
+    <div className="verify-container">
+      <h2 className="verify-title">Pending Employers</h2>
 
-      {loading && <p>Loading...</p>}
+      {loading && <p className="loading-text">Loading...</p>}
 
       {!loading && employers.length === 0 && (
-        <p>No pending employers.</p>
+        <p className="empty-text">No pending employers.</p>
       )}
 
-      {employers.map((emp) => (
-        <div
-          key={emp.id}
-          style={{
-            border: "1px solid #ccc",
-            margin: "10px",
-            padding: "10px"
-          }}
-        >
-          <p><b>Email:</b> {emp.email}</p>
+      {!loading && employers.length > 0 && (
+        <div className="verify-list">
+          {employers.map((emp) => (
+            <div key={emp.id} className="verify-card">
+              <div className="verify-info">
+                <b>Email:</b> {emp.email}
+              </div>
 
-          <button onClick={() => updateStatus(emp.id, "approved")}>
-            Approve
-          </button>
+              <div className="verify-actions">
+                <button
+                  className="approve-btn"
+                  onClick={() => updateStatus(emp.id, "approved")}
+                >
+                  Approve
+                </button>
 
-          <button
-            onClick={() => updateStatus(emp.id, "rejected")}
-            style={{ marginLeft: "10px" }}
-          >
-            Reject
-          </button>
+                <button
+                  className="reject-btn"
+                  onClick={() => updateStatus(emp.id, "rejected")}
+                >
+                  Reject
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
-      ))}
+      )}
     </div>
   );
 }

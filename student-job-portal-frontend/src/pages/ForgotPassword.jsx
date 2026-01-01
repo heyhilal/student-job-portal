@@ -1,5 +1,6 @@
 import { useState } from "react";
 import api from "../services/api";
+import "../styles/Auth.css";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -11,10 +12,11 @@ export default function ForgotPassword() {
     e.preventDefault();
     setError("");
     setMessage("");
+    setResetLink("");
 
     try {
       const res = await api.post("/auth/forgot-password", { email });
-      setMessage("Password reset link generated ✅");
+      setMessage("Password reset link generated successfully ✅");
       setResetLink(res.data.resetLink);
     } catch (err) {
       setError(
@@ -24,33 +26,36 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div style={{ maxWidth: "400px", margin: "50px auto" }}>
-      <h2>Forgot Password</h2>
+    <div className="auth-container">
+      <div className="auth-card">
+        <h2 className="auth-title">Forgot Password</h2>
 
-      <form onSubmit={handleSubmit}>
-        <label>Email</label>
-        <input
-          type="email"
-          value={email}
-          required
-          onChange={(e) => setEmail(e.target.value)}
-          style={{ width: "100%", marginBottom: "10px" }}
-        />
+        <form className="auth-form" onSubmit={handleSubmit}>
+          <input
+            className="auth-input"
+            type="email"
+            placeholder="Enter your email"
+            value={email}
+            required
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-        <button type="submit">Send Reset Link</button>
-      </form>
+          <button className="auth-button" type="submit">
+            Send Reset Link
+          </button>
+        </form>
 
-      {message && <p style={{ color: "green" }}>{message}</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
+        {message && <p className="auth-success">{message}</p>}
+        {error && <p className="auth-error">{error}</p>}
 
-      {/* Reset link (email yerine ekranda gösteriyoruz) */}
-      {resetLink && (
-        <p>
-          <a href={resetLink} target="_blank" rel="noreferrer">
-            Click here to reset your password
-          </a>
-        </p>
-      )}
+        {resetLink && (
+          <p style={{ textAlign: "center", marginTop: "10px" }}>
+            <a href={resetLink} target="_blank" rel="noreferrer">
+              Click here to reset your password
+            </a>
+          </p>
+        )}
+      </div>
     </div>
   );
 }

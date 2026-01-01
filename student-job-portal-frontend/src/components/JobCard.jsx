@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { applyToJob } from "../api/application.api";
 import { useAuth } from "../context/AuthContext";
+import "../styles/JobCard.css";
 
 const JobCard = ({ job, onApplied }) => {
   const { role } = useAuth();
@@ -11,56 +12,62 @@ const JobCard = ({ job, onApplied }) => {
   const handleApply = async () => {
     try {
       setLoading(true);
-
-      // sadece job.id gönderiyoruz
       await applyToJob(job.id);
-
       setApplied(true);
 
-      // 🔥 StudentDashboard'a haber ver
       if (onApplied) {
         await onApplied();
       }
-
-      alert("Applied successfully ✅");
     } catch (err) {
-      console.error("Apply error:", err);
-      alert(err?.response?.data?.message || "Failed to apply for this job ❌");
+      alert(err?.response?.data?.message || "Failed to apply ❌");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div
-      style={{
-        border: "1px solid #ccc",
-        borderRadius: "8px",
-        padding: "15px",
-        marginBottom: "15px",
-      }}
-    >
-      <h3>{job.title}</h3>
+    <div className="job-card">
+      {/* HEADER */}
+      <div className="job-header">
+        <div>
+          <div className="job-title">{job.title}</div>
+          <div className="job-company">{job.companyName}</div>
+        </div>
+      </div>
 
-      <p>
-        <strong>Company:</strong> {job.companyName}
-      </p>
+      {/* BADGES */}
+      <div className="job-badges">
+        {job.location && (
+          <span className="job-badge">{job.location}</span>
+        )}
+        {job.jobType && (
+          <span className="job-badge">{job.jobType}</span>
+        )}
+      </div>
 
-      <p>{job.description}</p>
+      {/* DESCRIPTION */}
+      <div className="job-description">
+        {job.description}
+      </div>
 
-      {/* SADECE STUDENT APPLY GÖRÜR */}
-      {role === "student" && (
-        <button
-          onClick={handleApply}
-          disabled={applied || loading}
-          style={{
-            marginTop: "10px",
-            cursor: applied || loading ? "not-allowed" : "pointer",
-          }}
-        >
-          {applied ? "Applied" : loading ? "Applying..." : "Apply"}
-        </button>
-      )}
+      {/* FOOTER */}
+      <div className="job-footer">
+        <div className="job-salary">
+          {job.salary ? `${job.salary} ₺` : "Salary not specified"}
+        </div>
+
+        {role === "student" && (
+          <button
+            className={`btn btn-primary apply-btn ${
+              applied ? "applied" : ""
+            }`}
+            onClick={handleApply}
+            disabled={applied || loading}
+          >
+            {applied ? "Applied" : loading ? "Applying..." : "Apply"}
+          </button>
+        )}
+      </div>
     </div>
   );
 };

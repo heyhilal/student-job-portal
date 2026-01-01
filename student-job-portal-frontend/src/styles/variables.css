@@ -1,15 +1,18 @@
 :root {
     /* Colors */
     --primary-color: #4f46e5;      /* indigo */
-    --secondary-color: #22c55e;    /* green */
-    --danger-color: #ef4444;       /* red */
+    --primary-light: #eef2ff;      /* indigo light */
+    --secondary-color: #22c55e;
+    --danger-color: #ef4444;
+  
     --bg-color: #f9fafb;
     --card-bg: #ffffff;
+  
     --text-color: #111827;
     --text-muted: #6b7280;
     --border-color: #e5e7eb;
   
-    /* Spacing */
+    /* Radius */
     --radius-sm: 6px;
     --radius-md: 10px;
     --radius-lg: 14px;

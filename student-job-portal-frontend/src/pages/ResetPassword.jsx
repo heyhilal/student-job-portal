@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../services/api";
+import "../styles/Auth.css";
 
 export default function ResetPassword() {
   const { token } = useParams();
@@ -25,7 +26,6 @@ export default function ResetPassword() {
       await api.post(`/auth/reset-password/${token}`, { password });
       setMessage("Password reset successful ✅");
 
-      // 2 sn sonra login'e yönlendir
       setTimeout(() => {
         navigate("/login");
       }, 2000);
@@ -37,33 +37,37 @@ export default function ResetPassword() {
   };
 
   return (
-    <div style={{ maxWidth: "400px", margin: "50px auto" }}>
-      <h2>Reset Password</h2>
+    <div className="auth-container">
+      <div className="auth-card">
+        <h2 className="auth-title">Reset Password</h2>
 
-      <form onSubmit={handleSubmit}>
-        <label>New Password</label>
-        <input
-          type="password"
-          value={password}
-          required
-          onChange={(e) => setPassword(e.target.value)}
-          style={{ width: "100%", marginBottom: "10px" }}
-        />
+        <form className="auth-form" onSubmit={handleSubmit}>
+          <input
+            className="auth-input"
+            type="password"
+            placeholder="New password"
+            value={password}
+            required
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
-        <label>Confirm Password</label>
-        <input
-          type="password"
-          value={confirmPassword}
-          required
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          style={{ width: "100%", marginBottom: "10px" }}
-        />
+          <input
+            className="auth-input"
+            type="password"
+            placeholder="Confirm new password"
+            value={confirmPassword}
+            required
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          />
 
-        <button type="submit">Reset Password</button>
-      </form>
+          <button className="auth-button" type="submit">
+            Reset Password
+          </button>
+        </form>
 
-      {message && <p style={{ color: "green" }}>{message}</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
+        {message && <p className="auth-success">{message}</p>}
+        {error && <p className="auth-error">{error}</p>}
+      </div>
     </div>
   );
 }

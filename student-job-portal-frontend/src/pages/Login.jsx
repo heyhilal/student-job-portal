@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
+import "../styles/Auth.css";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -13,17 +14,14 @@ export default function Login() {
     setError("");
 
     try {
-      // 🔴 RES BURADA TANIMLANIYOR
       const res = await api.post("/auth/login", {
         email,
         password,
       });
 
-      // 🔐 TOKEN + USER KAYDET
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
-      // 🔀 ROLE’A GÖRE YÖNLENDİR
       if (res.data.user.role === "admin") {
         navigate("/admin");
       } else if (res.data.user.role === "employer") {
@@ -37,32 +35,36 @@ export default function Login() {
   };
 
   return (
-    <div style={{ maxWidth: "400px", margin: "50px auto" }}>
-      <h2>Login</h2>
+    <div className="auth-container">
+      <div className="auth-card">
+        <h2 className="auth-title">Login</h2>
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          required
-          onChange={(e) => setEmail(e.target.value)}
-          style={{ width: "100%", marginBottom: "10px" }}
-        />
+        <form className="auth-form" onSubmit={handleSubmit}>
+          <input
+            className="auth-input"
+            type="email"
+            placeholder="Email"
+            value={email}
+            required
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          required
-          onChange={(e) => setPassword(e.target.value)}
-          style={{ width: "100%", marginBottom: "10px" }}
-        />
+          <input
+            className="auth-input"
+            type="password"
+            placeholder="Password"
+            value={password}
+            required
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
-        <button type="submit">Login</button>
-      </form>
+          <button className="auth-button" type="submit">
+            Login
+          </button>
+        </form>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+        {error && <p className="auth-error">{error}</p>}
+      </div>
     </div>
   );
 }

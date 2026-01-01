@@ -1,0 +1,26 @@
+.resumes-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+  
+  .resume-card {
+    background: var(--white);
+    border: 1px solid var(--gray-border);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 12px;
+  }
+  
+  .resume-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  
+  .rename-input {
+    margin-top: 6px;
+    padding: 6px;
+    font-size: 13px;
+  }
+  

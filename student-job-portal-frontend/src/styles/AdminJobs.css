@@ -1,0 +1,56 @@
+.adminjobs-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+  
+  .adminjobs-title {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+  
+  .adminjobs-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+  
+  .adminjob-card {
+    background-color: var(--white);
+    border: 1px solid var(--gray-border);
+    border-radius: 12px;
+    padding: 16px;
+  }
+  
+  .adminjob-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  
+  .adminjob-location {
+    font-size: 14px;
+    color: #6b7280;
+    margin-bottom: 14px;
+  }
+  
+  .delete-btn {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid #ef4444;
+    background: transparent;
+    color: #ef4444;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  
+  .delete-btn:hover {
+    background-color: #fee2e2;
+  }
+  
+  .empty-text {
+    font-size: 14px;
+    color: #6b7280;
+  }
+  

@@ -1,0 +1,71 @@
+.verify-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+  
+  .verify-title {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+  
+  .verify-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  
+  .verify-card {
+    background-color: var(--white);
+    border: 1px solid var(--gray-border);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .verify-info {
+    font-size: 14px;
+  }
+  
+  .verify-actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .approve-btn {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: none;
+    background-color: #22c55e;
+    color: white;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  
+  .reject-btn {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: none;
+    background-color: #ef4444;
+    color: white;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  
+  .approve-btn:hover {
+    background-color: #16a34a;
+  }
+  
+  .reject-btn:hover {
+    background-color: #dc2626;
+  }
+  
+  .loading-text,
+  .empty-text {
+    font-size: 14px;
+    color: #6b7280;
+  }
+  

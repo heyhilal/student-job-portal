@@ -1,72 +1,94 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import "../styles/Navbar.css";
 
 export default function Navbar() {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    navigate("/login");
+    localStorage.clear();
+    navigate("/");
   };
 
   return (
-    <nav style={{ padding: 10, borderBottom: "1px solid #ccc" }}>
-      <Link to="/">Home</Link>
-
-      {!user && (
-        <>
-          {" | "}
-          <Link to="/login">Login</Link>
-          {" | "}
-          <Link to="/register">Register</Link>
-        </>
-      )}
-
-      {user?.role === "student" && (
-        <>
-          {" | "}
-          <Link to="/student">Dashboard</Link>
-          {" | "}
-          <Link to="/student/jobs">Jobs</Link>
-          {" | "}
-          <Link to="/student/profile">Profile</Link>
-          {" | "}
-          <Link to="/student/resumes">My Resumes</Link>
-
-        </>
-      )}
-
-      {user?.role === "employer" && (
-        <>
-          {" | "}
-          <Link to="/employer">Dashboard</Link>
-          {" | "}
-          <Link to="/employer/job-post">Post Job</Link>
-          {" | "}
-          <Link to="/employer/applications">Applications</Link>
-        </>
-      )}
-{user?.role === "admin" && (
-  <>
-    {" | "}
-    <Link to="/admin/dashboard">Admin Dashboard</Link>
-    {" | "}
-    <Link to="/admin/employers">Verify Employers</Link>
-    {" | "}
-    <Link to="/admin/jobs">Jobs</Link>
-    {" | "}
-    <Link to="/admin/users">All Users</Link>
-  </>
-)}
+    <nav className="navbar">
+      
+      {/* LEFT – LOGO */}
+      <div className="nav-left">
+        <Link to="/">StudentJob</Link>
+      </div>
 
 
-      {user && (
-        <>
-          {" | "}
-          <button onClick={handleLogout}>Logout</button>
-        </>
-      )}
+      {/* CENTER – ROLE LINKS */}
+      <div className="nav-center">
+        {!user && (
+          <NavLink to="/" className="nav-link">
+            Home
+          </NavLink>
+        )}
+
+        {user?.role === "student" && (
+          <>
+            <NavLink to="/student" className="nav-link">
+              Dashboard
+            </NavLink>
+            <NavLink to="/student/jobs" className="nav-link">
+              Jobs
+            </NavLink>
+            <NavLink to="/student/profile" className="nav-link">
+              Profile
+            </NavLink>
+          </>
+        )}
+
+        {user?.role === "employer" && (
+          <>
+            <NavLink to="/employer" className="nav-link">
+              Dashboard
+            </NavLink>
+            <NavLink to="/employer/job-post" className="nav-link">
+              Post Job
+            </NavLink>
+            <NavLink to="/employer/applications" className="nav-link">
+              Applications
+            </NavLink>
+          </>
+        )}
+
+        {user?.role === "admin" && (
+          <>
+            <NavLink to="/admin/dashboard" className="nav-link">
+              Admin
+            </NavLink>
+            <NavLink to="/admin/users" className="nav-link">
+              Users
+            </NavLink>
+            <NavLink to="/admin/jobs" className="nav-link">
+              Jobs
+            </NavLink>
+          </>
+        )}
+      </div>
+
+      {/* RIGHT – AUTH */}
+      <div className="nav-right">
+        {!user && (
+          <>
+            <Link to="/login">
+              <button className="btn btn-outline">Login</button>
+            </Link>
+            <Link to="/register">
+              <button className="btn btn-primary">Register</button>
+            </Link>
+          </>
+        )}
+
+        {user && (
+          <button className="btn btn-danger" onClick={handleLogout}>
+            Logout
+          </button>
+        )}
+      </div>
     </nav>
   );
 }

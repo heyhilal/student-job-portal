@@ -1,12 +1,18 @@
 import { useState } from "react";
 import api from "../../services/api";
+import "../../styles/UploadResume.css";
 
 export default function UploadResume({ onUploadSuccess }) {
   const [file, setFile] = useState(null);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
   const handleUpload = async () => {
+    setMessage("");
+    setError("");
+
     if (!file) {
-      alert("Please select a resume file ❗");
+      setError("Please select a resume file ❗");
       return;
     }
 
@@ -15,31 +21,40 @@ export default function UploadResume({ onUploadSuccess }) {
 
     try {
       await api.post("/resumes/upload", formData);
-      alert("Resume uploaded successfully ✅");
+      setMessage("Resume uploaded successfully ✅");
 
       if (onUploadSuccess) {
         onUploadSuccess();
       }
     } catch (err) {
-      console.error("UPLOAD ERROR:", err.response?.data || err.message);
-      alert(
+      setError(
         err.response?.data?.message ||
-        "Resume upload failed ❌ (see console)"
+        "Resume upload failed ❌"
       );
     }
   };
 
   return (
-    <div>
+    <div className="upload-container">
+      <div className="upload-title">Upload Resume</div>
+
       <input
+        className="upload-input"
         type="file"
         accept=".pdf,.doc,.docx"
         onChange={(e) => setFile(e.target.files[0])}
       />
 
-      <button type="button" onClick={handleUpload}>
+      <button
+        type="button"
+        className="btn btn-primary"
+        onClick={handleUpload}
+      >
         Upload Resume
       </button>
+
+      {message && <div className="upload-success">{message}</div>}
+      {error && <div className="upload-error">{error}</div>}
     </div>
   );
 }

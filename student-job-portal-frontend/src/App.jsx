@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -20,10 +20,10 @@ import AdminUsers from "./pages/admin/AdminUsers";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
-
 
 
 
@@ -116,14 +116,6 @@ export default function App() {
       
         
         {/* Admin */}
-           <Route
-             path="/admin"
-             element={
-              <ProtectedRoute role="admin"> 
-              <h2>Admin Dashboard</h2>
-              </ProtectedRoute>
-           }
-        />
         <Route
           path="/admin/jobs"
           element={
@@ -132,6 +124,15 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+        path="/admin"
+        element={
+          <ProtectedRoute role="admin">
+            <Navigate to="/admin/dashboard" replace />
+          </ProtectedRoute>
+        }
+      />
+      
         <Route
         path="/admin/employers"
         element={
@@ -160,6 +161,7 @@ export default function App() {
 
 
       </Routes>
+      <Footer />
     </BrowserRouter>
   );
 }

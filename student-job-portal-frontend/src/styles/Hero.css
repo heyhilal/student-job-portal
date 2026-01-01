@@ -1,0 +1,44 @@
+.hero {
+    min-height: calc(100vh - 72px); /* navbar yüksekliği */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  
+    background: linear-gradient(
+      135deg,
+      #eef2ff,
+      #f9fafb
+    );
+  }
+  
+  .hero-content {
+    max-width: 900px;
+    text-align: center;
+    padding: 40px 20px;
+  }
+  
+  .hero-title {
+    font-size: 48px;
+    font-weight: 800;
+    color: #111827;
+    line-height: 1.1;
+  }
+  
+  .hero-title span {
+    color: var(--primary-color);
+  }
+  
+  .hero-subtitle {
+    margin-top: 20px;
+    font-size: 18px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+  
+  .hero-actions {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+  }
+  

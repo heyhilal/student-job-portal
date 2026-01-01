@@ -1,0 +1,73 @@
+/* ===== DARK NAVBAR ===== */
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  
+    height: 72px;
+    padding: 0 40px;
+  
+    background: linear-gradient(
+      to right,
+      #312e81,
+      #1e1b4b
+    );
+  
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  }
+  
+  /* ===== LOGO ===== */
+  .nav-left a {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: #ffffff;
+  }
+  
+  /* ===== LINKS ===== */
+  .nav-center {
+    display: flex;
+    gap: 28px;
+  }
+  
+  .nav-link {
+    font-size: 14px;
+    font-weight: 500;
+    color: #c7d2fe;
+    position: relative;
+    padding: 6px 0;
+    transition: color 0.2s ease;
+  }
+  
+  .nav-link:hover {
+    color: #ffffff;
+  }
+  
+  /* ACTIVE LINK */
+  .nav-link.active {
+    color: #ffffff;
+  }
+  
+  .nav-link.active::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -12px;
+    width: 20px;
+    height: 3px;
+    background-color: #a5b4fc;
+    border-radius: 999px;
+    transform: translateX(-50%);
+  }
+  
+  /* ===== RIGHT ===== */
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  

@@ -1,135 +1,80 @@
 import { useEffect, useState } from "react";
 import api from "../../services/api";
 import UploadResume from "./UploadResume";
+import "../../styles/EditProfile.css";
 
 export default function EditProfile() {
   const [form, setForm] = useState({
     university: "",
     major: "",
-    GPA: ""
+    GPA: "",
   });
 
   const [resumeUploaded, setResumeUploaded] = useState(false);
-  const [savedProfile, setSavedProfile] = useState(null);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
 
-  // Profil bilgilerini backend'den çek
-  const fetchProfile = async () => {
-    try {
-      const res = await api.get("/student/profile");
-      setForm(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   useEffect(() => {
-    fetchProfile();
+    api.get("/student/profile").then((res) => setForm(res.data));
   }, []);
 
-  // Input değişimleri
-  const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value
-    });
-  };
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
 
-  // Save Profile
   const handleSubmit = async () => {
-    // Resume zorunlu
     if (!resumeUploaded) {
-      setError("You must upload a resume before saving your profile.");
-      setSuccess("");
+      setError("You must upload a resume first.");
       return;
     }
 
     try {
       await api.put("/student/profile", form);
-
-      // UI geri bildirimi
-      setSavedProfile(form);
       setSuccess("Profile updated successfully ✅");
       setError("");
-    } catch (err) {
-      console.error(err);
+    } catch {
       setError("Failed to save profile ❌");
-      setSuccess("");
     }
   };
 
   return (
-    <div style={{ maxWidth: "600px", margin: "0 auto" }}>
-      <h2>Edit Profile</h2>
+    <div className="profile-container">
+      <div className="profile-card">
+        <h2>Edit Profile</h2>
 
-      {/* PROFILE FORM */}
-      <div>
-        <label>University</label><br />
         <input
+          className="profile-input"
           name="university"
+          placeholder="University"
           value={form.university}
           onChange={handleChange}
         />
 
-        <br /><br />
-
-        <label>Major</label><br />
         <input
+          className="profile-input"
           name="major"
+          placeholder="Major"
           value={form.major}
           onChange={handleChange}
         />
 
-        <br /><br />
-
-        <label>GPA</label><br />
         <input
+          className="profile-input"
           name="GPA"
+          placeholder="GPA"
           value={form.GPA}
           onChange={handleChange}
         />
+
+        <h3>Resume</h3>
+        <UploadResume onUploadSuccess={() => setResumeUploaded(true)} />
+
+        {error && <p className="auth-error">{error}</p>}
+        {success && <p className="auth-success">{success}</p>}
+
+        <button className="btn btn-primary" onClick={handleSubmit}>
+          Save Profile
+        </button>
       </div>
-
-      <hr />
-
-      {/* RESUME UPLOAD */}
-      <h3>Resume (Required)</h3>
-      <UploadResume onUploadSuccess={() => setResumeUploaded(true)} />
-
-      {/* ERROR / SUCCESS MESSAGES */}
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {success && <p style={{ color: "green" }}>{success}</p>}
-
-      <br />
-
-      {/* SAVE BUTTON – EN ALTTA */}
-      <button onClick={handleSubmit}>
-        Save Profile
-      </button>
-
-      <hr />
-
-      {/* PROFILE SUMMARY */}
-      {savedProfile && (
-  <div style={{ marginTop: "20px" }}>
-    <h3>Profile Summary</h3>
-    <p><b>University:</b> {savedProfile.university}</p>
-    <p><b>Major:</b> {savedProfile.major}</p>
-    <p><b>GPA:</b> {savedProfile.GPA}</p>
-
-    <p>
-      <b>Resume:</b>{" "}
-      <a
-        href={`http://localhost:5050/${savedProfile.resume_path}`}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        View Resume (PDF)
-      </a>
-    </p>
-    </div>
-    )}
     </div>
   );
 }

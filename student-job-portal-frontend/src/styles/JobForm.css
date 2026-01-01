@@ -1,0 +1,74 @@
+.jobform-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+  
+  .jobform-card {
+    background-color: var(--white);
+    border: 1px solid var(--gray-border);
+    border-radius: 12px;
+    padding: 24px;
+  }
+  
+  .jobform-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+  
+  .jobform {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  
+  .jobform-input,
+  .jobform-textarea {
+    padding: 10px 12px;
+    font-size: 14px;
+    border-radius: 8px;
+    border: 1px solid var(--gray-border);
+    resize: none;
+  }
+  
+  .jobform-input:focus,
+  .jobform-textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+  
+  .jobform-textarea {
+    min-height: 100px;
+  }
+  
+  .jobform-btn {
+    margin-top: 10px;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 8px;
+    border: none;
+    background-color: var(--primary);
+    color: white;
+    cursor: pointer;
+  }
+  
+  .jobform-btn:hover {
+    background-color: #2563eb;
+  }
+  
+  .jobform-success {
+    margin-top: 12px;
+    font-size: 13px;
+    color: #16a34a;
+    text-align: center;
+  }
+  
+  .jobform-error {
+    margin-top: 12px;
+    font-size: 13px;
+    color: #dc2626;
+    text-align: center;
+  }
+  

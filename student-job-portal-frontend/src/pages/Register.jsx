@@ -1,75 +1,83 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
+import "../styles/Auth.css";
 
 export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("student"); // default
+  const [role, setRole] = useState("student");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    setError("");
 
     try {
       await api.post("/auth/register", {
         email,
         password,
-        role, // "student" veya "employer"
+        role,
       });
-      
 
-      alert("Register successful ✅");
-      navigate("/");
+      navigate("/login");
     } catch (err) {
-      alert("Register failed ❌");
+      setError(err.response?.data?.message || "Register failed");
     }
   };
 
   return (
-    <form onSubmit={handleRegister}>
-      <h2>Register</h2>
+    <div className="auth-container">
+      <div className="auth-card">
+        <h2 className="auth-title">Create Account</h2>
 
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
-
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
-
-      {/* 🔽 ROLE SEÇİMİ */}
-      <div>
-        <label>
+        <form className="auth-form" onSubmit={handleRegister}>
           <input
-            type="radio"
-            value="student"
-            checked={role === "student"}
-            onChange={() => setRole("student")}
+            className="auth-input"
+            type="email"
+            placeholder="Email"
+            value={email}
+            required
+            onChange={(e) => setEmail(e.target.value)}
           />
-          Student
-        </label>
 
-        <label style={{ marginLeft: "15px" }}>
           <input
-            type="radio"
-            value="employer"
-            checked={role === "employer"}
-            onChange={() => setRole("employer")}
+            className="auth-input"
+            type="password"
+            placeholder="Password"
+            value={password}
+            required
+            onChange={(e) => setPassword(e.target.value)}
           />
-          Employer
-        </label>
+
+          <div className="role-group">
+            <label className="role-option">
+              <input
+                type="radio"
+                checked={role === "student"}
+                onChange={() => setRole("student")}
+              />
+              Student
+            </label>
+
+            <label className="role-option">
+              <input
+                type="radio"
+                checked={role === "employer"}
+                onChange={() => setRole("employer")}
+              />
+              Employer
+            </label>
+          </div>
+
+          <button className="auth-button" type="submit">
+            Register
+          </button>
+        </form>
+
+        {error && <p className="auth-error">{error}</p>}
       </div>
-
-      <button type="submit">Register</button>
-    </form>
+    </div>
   );
 }
